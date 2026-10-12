@@ -1,51 +1,59 @@
 # NepaliEvidenceBench
 
-An open benchmark for evidence-grounded reasoning over frozen Nepal public data. This repository publishes the unchanged **NepaliBench v0.3-open** dataset under a distinct repository name.
+NepaliEvidenceBench tests how well language models reason from Nepal public data. Questions ask models to calculate from tables, compare dated records, combine information from multiple documents, apply service rules, and recognize when the available evidence is insufficient.
 
 **400 questions · 120 dev · 280 test · 20 domains · English, Nepali, and bilingual prompts**
 
-Tasks cover table calculations, temporal comparisons, cross-document joins, policy plus statistics, citizen procedures, geographic reasoning, document interpretation, and insufficient evidence. Each item includes materialized evidence with source provenance and exact locators. The gold master additionally includes typed answers and deterministic derivations.
+Each question comes with the evidence needed to answer it, source details, and precise references to the cited records. The answer set includes expected answers, units, numeric tolerances, and calculation steps.
 
-## For reviewers
+## Review the questions
 
-Start with [REVIEW_GUIDE.md](REVIEW_GUIDE.md). Review the gold master in `benchmark/items.jsonl`. Each record has English and Nepali questions, evidence, expected answers, derivations, and review status. The dataset has been machine-validated; **all 400 items still require independent human review**. Nepali and bilingual wording also needs native-speaker review.
+The benchmark is a research preview. All 400 questions still need independent answer review, and Nepali wording needs native-speaker review.
 
-## Files
+Start with the [reviewer guide](REVIEW_GUIDE.md). It explains how to check a question, reproduce its answer, assess the translations, and report corrections. The complete question and answer set is in [`benchmark/items.jsonl`](benchmark/items.jsonl).
 
-- `benchmark/items.jsonl`: all 400 items, with gold answers and derivations.
-- `benchmark/dev.jsonl`: 120 calibration items with gold answers.
-- `benchmark/test.jsonl`: 280 items without answers or derivations.
-- `benchmark/render.py`: canonical prompt renderer.
-- `benchmark/evaluate.py`: answer and source-citation scorer.
-- `benchmark/original_manifest.json`: original release manifest, preserved unchanged.
-- `RELEASE.json`: export provenance and checksums of the files published here.
+## What is included
 
-The split is grouped by source family. Both partitions cover all eight task families. Source families do not overlap between dev and test. The original item IDs and version identifiers are preserved.
+| File | Contents |
+| --- | --- |
+| `benchmark/items.jsonl` | All 400 questions, evidence, expected answers, and derivations |
+| `benchmark/dev.jsonl` | 120 calibration questions with answers |
+| `benchmark/test.jsonl` | 280 evaluation questions without answer fields |
+| `benchmark/render.py` | Creates model prompts from questions and evidence |
+| `benchmark/evaluate.py` | Scores predicted answers and source citations |
+| `RELEASE.json` | Version, question counts, and file checksums |
 
-## Run
+The dev and test sets use different source families. Both sets cover all eight task types: table calculation, temporal comparison, cross-document reasoning, policy plus statistics, citizen procedures, geographic reasoning, document interpretation, and insufficient evidence.
 
-Python 3.10 or newer; no third-party packages required. From the repository root:
+## Evaluate a model
+
+Requires Python 3.10 or newer, with no additional packages. Run from the repository root:
 
 ```sh
+# Inspect one prompt.
 python3 benchmark/render.py --split dev --item-id npb-v03-0001
+
+# Generate the evaluation prompts.
 python3 benchmark/render.py --split test > prompts.jsonl
+
+# Score responses saved in predictions.jsonl.
 python3 benchmark/evaluate.py predictions.jsonl --split test
 ```
 
-Return one prediction per line:
+Send each rendered prompt to your model and save one response per line:
 
 ```json
 {"item_id":"npb-v03-0001","answer":10,"citations":["E1"]}
 ```
 
-Use the renderer for model evaluation: it exposes the selected question and evidence without gold answers or alternate translations. Missing predictions count as incorrect. Numeric scoring uses each item's declared absolute tolerance. Citation scoring measures source compliance over supplied evidence.
+Use the prompt renderer to keep expected answers out of model inputs. It includes only the selected question, its evidence, and the requested answer language. The scorer checks answer correctness and citations; unanswered questions count as incorrect. Numeric answers are checked against each question's stated tolerance.
 
-## Scope and limitations
+## Limitations
 
-This is an open diagnostic research preview. The gold answers are public, so the test split is not contamination-resistant. The benchmark tests reasoning over supplied oracle evidence, rather than retrieval from the full corpus. No model performance results or completed human reviews are claimed.
+The answers are public, so results may be affected by prior exposure to the dataset. The benchmark measures reasoning from supplied evidence; it does not evaluate finding documents or retrieving evidence.
 
-This repository includes only the benchmark and its review/evaluation materials. Original corpus downloads, normalized source files, collection code, and corpus reports are outside this export. Evidence excerpts and provenance remain embedded in the items. Consequently, the original corpus-dependent builder and validator are not bundled. The original manifest references those upstream files; `RELEASE.json` records the standalone export.
+Evidence excerpts are included with the questions. Full source documents are not included. Source dates and record references identify the snapshots used to construct each question; current publisher webpages may contain different information.
 
 ## Source terms
 
-Evidence derives from Nepal public institutions. Source terms and redistribution rights remain source-specific. This repository does not assign a blanket license to third-party evidence. Review source-specific terms before further redistribution.
+Evidence comes from Nepal public institutions. Terms and redistribution rights depend on each source. Check the publisher's terms before redistributing third-party evidence.

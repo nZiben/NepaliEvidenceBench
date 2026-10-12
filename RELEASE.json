@@ -1,9 +1,6 @@
 {
   "name": "NepaliEvidenceBench",
-  "dataset_name": "NepaliBench",
   "dataset_version": "0.3-open",
-  "upstream_commit": "cfc0a6a4ebc0046cc641b840318760323a25276f",
-  "dataset_modified": false,
   "records": {
     "items": 400,
     "dev": 120,
@@ -21,10 +18,6 @@
     "benchmark/items.jsonl": {
       "sha256": "fe1cc3a15e48c9576b20a6a3d3ad0c5db2943f7b62a973dc6717bf856d0c377a",
       "bytes": 2502324
-    },
-    "benchmark/original_manifest.json": {
-      "sha256": "e65e161c003eb7e88ef350c58b7e8f1b2630dfd025b7bdd23f87598625811a0a",
-      "bytes": 2236
     },
     "benchmark/render.py": {
       "sha256": "95df947ed89a34ba8a5ae41d6f7b8862c1cea847f1157e56a7da09c858fa7c82",
